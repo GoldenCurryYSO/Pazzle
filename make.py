@@ -1,4 +1,5 @@
 from functools import reduce
+import sys
 
 path = "buta012.dic"
 
@@ -18,8 +19,8 @@ def make_dict(N):
 #同じ字から始まり尻がanswerとなるようなN字の言葉を検索する
 def make(answer, N):
     dic = make_dict(N)
+    canditate = {}
     for init in dic.keys():
-        print("【{0}】".format(init))
         words = dic[init]
 
         result = {}
@@ -28,19 +29,35 @@ def make(answer, N):
         for w in words:
             if(answer.find(w[N - 1:]) != -1):
                 result[w[N - 1]].append(w)
+        canditate[init] = result
+        
         #print
-        if reduce(lambda b1, b2:b1 and b2, map(lambda l:len(l) > 0, result.values())):
-            for tail in result.keys():
-                print("<{0}>".format(tail), end="")
-                for i in range(len(result[tail])):
-                    print("\t" + result[tail][i], end="")
-                    if(i % 3 == 2):
-                        print()
-                print()
-            print("return to next...\n")
-            input()
+        min = sys.maxsize
+        min_tail = ""
+        for k in result.keys():
+            if(min > len(result[k])):
+                min = len(result[k])
+                min_tail = k
+        if(min > 0):
+            print("【{0}】".format(init))
+            print("<{0}>:{1}".format(min_tail, result[min_tail]))
+    init = ""
+    while(True):
+        print("choose initial")
+        init = input()
+        if(init == ""):
+            break
+        for tail in canditate[init].keys():
+            print("<{0}>".format(tail), end="")
+            for i in range(len(canditate[init][tail])):
+                print("\t" + canditate[init][tail][i], end="")
+                if(i % 3 == 2):
+                    print()
+            print()
+        
 
 while(True):
+    print("<word> <length>")
     s = input()
     if(s == ""):
         exit()
